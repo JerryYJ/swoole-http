@@ -1,0 +1,13 @@
+.project
+*.patch
+.idea/
+.git/
+runtime/
+vendor/
+*.lock
+.phpintel/
+env
+.phpstorm.meta.php
+.DS_Store
+public/devtool/
+bin/php-cs-fixer
