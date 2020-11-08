@@ -1,14 +1,16 @@
 <?php
 
-use App\controllers\UserController;
-use Core\BeanFactory;
-use Core\init\RouterCollect;
+use Swoole\Server;
 
-require_once __DIR__.'/vendor/autoload.php';
+$http = new Swoole\Http\Server('0.0.0.0', 9501);
 
-require_once __DIR__.'/app/config/define.php';
+$http->on('request', function ($request, $response) {
 
-BeanFactory::init();
+});
 
-$user = BeanFactory::getBean(RouterCollect::class);
-var_dump($user->routers);
+$http->on('Start', function (Server $server) {
+   $pid = $server->master_pid;
+   file_put_contents('./runtime/master.pid', $pid);
+});
+
+$http->start();

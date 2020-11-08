@@ -7,6 +7,7 @@ use Core\annotations\Beans;
 use Core\annotations\RequestMapping;
 use Core\annotations\Value;
 use Core\http\Request;
+use Core\http\Response;
 
 /**
  * Class UserController
@@ -25,18 +26,18 @@ class UserController
      * @RequestMapping(value="/test", method={"GET"})
      * @return string
      */
-    public function test()
+    public function test(Response $response)
     {
-        return "hahahah";
+        return ['hello'=>1, 'name'=>'jerry'];
     }
 
     /**
      * @RequestMapping(value="/abc/{uid:\d+}", method={"GET"})
      * @return string
      */
-    public function abc(Request $request, $uid)
+    public function abc(Request $request, $uid, Response $response)
     {
-        var_dump($request->getQueryParams());
+        $response->setHttpStatus(404);
         return "abc:" . $uid;
     }
 }

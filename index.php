@@ -2,6 +2,7 @@
 
 use Core\BeanFactory;
 use Core\http\Request;
+use Core\http\Response;
 use Core\init\RouterCollect;
 
 $http = new Swoole\Http\Server('0.0.0.0', 9501);
@@ -14,8 +15,8 @@ $dispatcher = BeanFactory::getBean(RouterCollect::class)->getDispatcher();
 
 
 $http->on('request', function ($request, $response) use ($dispatcher) {
-    $response->header("Content-Type", "text/html; charset=utf-8");
     $myRequest = Request::init($request);
+    $myResponse = Response::init($response);
     $routeInfo = $dispatcher->dispatch($myRequest->getMethod(), $myRequest->getUri());
 
     switch ($routeInfo[0]) {
@@ -30,8 +31,9 @@ $http->on('request', function ($request, $response) use ($dispatcher) {
         case FastRoute\Dispatcher::FOUND:
             $handler = $routeInfo[1];
             $vars = $routeInfo[2];
-            $extVars = [$myRequest];
-            $response->end($handler($vars, $extVars));
+            $extVars = [$myRequest, $myResponse];
+            $myResponse->setBody($handler($vars, $extVars));
+            $myResponse->end();
             break;
     }
 });
