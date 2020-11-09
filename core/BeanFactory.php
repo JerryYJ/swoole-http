@@ -55,16 +55,28 @@ class BeanFactory
         return self::$container->get($name);
     }
 
+    private static function getAllBeanFile($dir)
+    {
+        $files = $files = glob($dir . "/*");
+        $ret = [];
+        foreach ($files as $file) {
+            if (is_dir($file)) {
+                $ret = array_merge($ret, self::getAllBeanFile($file));
+            } elseif (pathinfo($file)["extension"] == "php") {
+                $ret[] = $file;
+            }
+        }
+
+        return $ret;
+    }
+
     private static function ScanBeans($scan_dir, $scan_root_namespace)
     {
-//        $scan_dir = self::getEnv('scan_dir', ROOT_PATH . '/app');
-//        $scan_root_namespace = self::getEnv('scan_root_namespace', "App\\");
-        $files = glob($scan_dir . "/*.php");
-        foreach ($files as $file) {
+        $allFiles = self::getAllBeanFile($scan_dir);
+        foreach ($allFiles as $file) {
             require_once $file;
         }
 
-//        AnnotationRegistry::registerAutoloadNamespace("Core\\annotations");
         $reader = new AnnotationReader();
         foreach (get_declared_classes() as $class) {
             if (strstr($class, $scan_root_namespace)) {
